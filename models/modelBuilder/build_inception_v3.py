@@ -14,88 +14,289 @@ from layers import *
 def addInceptionT1(model, name , bottom,
                    p1_num_out,  p2_1x1, p2_num_out, p3_1x1, p3_num_out, p4_num_out, pool):
     # 1x1
-    model, top1 = addConvBnRelu(model, name='{}/p1_1x1'.format(name), bottom=bottom, num_output=p1_num_out,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_1x1',
+        bottom=bottom,
+        num_output=p1_num_out,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
     # 1x1->3x3
-    model, top2 = addConvBnRelu(model, name='{}/p2_1x1'.format(name), bottom=bottom, num_output=p2_1x1,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top2 = addConvBnRelu(model, name='{}/p2_3x3'.format(name), bottom=top2,   num_output=p2_num_out,
-                                kernel_size=3, stride=1, pad=1, filler="xavier")
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_1x1',
+        bottom=bottom,
+        num_output=p2_1x1,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_3x3',
+        bottom=top2,
+        num_output=p2_num_out,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        filler="xavier",
+    )
     # "5x5 factorized into 1x1->3x3->3x3
-    model, top3 = addConvBnRelu(model, name='{}/p3_1x1'.format(name), bottom=bottom, num_output=p3_1x1,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top3 = addConvBnRelu(model, name='{}/p3_3x3a'.format(name), bottom=top3,  num_output=p3_num_out,
-                                kernel_size=3, stride=1, pad=1, filler="xavier")
-    model, top3 = addConvBnRelu(model, name='{}/p3_3x3b'.format(name), bottom=top3,  num_output=p3_num_out,
-                                kernel_size=3, stride=1, pad=1, filler="xavier")
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_1x1',
+        bottom=bottom,
+        num_output=p3_1x1,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_3x3a',
+        bottom=top3,
+        num_output=p3_num_out,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        filler="xavier",
+    )
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_3x3b',
+        bottom=top3,
+        num_output=p3_num_out,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        filler="xavier",
+    )
     # pool->[1x1]
-    model, top4 = addPool(model, name='{}/p4_pool'.format(name), bottom=bottom,
-                                kernel_size=3, stride=1, pad=1, pool_type=pool)
-    model, top4 = addConvBnRelu(model, name='{}/p4_1x1'.format(name), bottom=top4, num_output=p4_num_out,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
+    model, top4 = addPool(
+        model,
+        name=f'{name}/p4_pool',
+        bottom=bottom,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        pool_type=pool,
+    )
+    model, top4 = addConvBnRelu(
+        model,
+        name=f'{name}/p4_1x1',
+        bottom=top4,
+        num_output=p4_num_out,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
     # concat
     tops = [top1, top2, top3, top4]
-    model, top = addConcat(model, name='{}/concat'.format(name), bottoms=tops)
+    model, top = addConcat(model, name=f'{name}/concat', bottoms=tops)
     return model, top
 
 #------------------------------------------------------------------------------
 def addReductionR1(model, name , bottom,  p1_1x1, p1_3x3, p1_3x3s2, p2_3x3s2, pool):
 
     # p1:1x1->[3x3]->[3x3/2]
-    model, top1 = addConvBnRelu(model, name='{}/p1_1x1'.format(name),  bottom=bottom, num_output=p1_1x1,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top1 = addConvBnRelu(model, name='{}/p1_3x3a'.format(name), bottom=top1,   num_output=p1_3x3,
-                                kernel_size=3, stride=1, pad=1, filler="xavier")
-    model, top1 = addConvBnRelu(model,name='{}/p1_3x3b'.format(name),  bottom=top1,   num_output=p1_3x3s2,
-                                kernel_size=3, stride=2, pad=0, filler="xavier")
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_1x1',
+        bottom=bottom,
+        num_output=p1_1x1,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_3x3a',
+        bottom=top1,
+        num_output=p1_3x3,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        filler="xavier",
+    )
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_3x3b',
+        bottom=top1,
+        num_output=p1_3x3s2,
+        kernel_size=3,
+        stride=2,
+        pad=0,
+        filler="xavier",
+    )
 
     # p2:1x1->[3x3]->[3x3/2]
 #   top2 = addConvBnRelu(model, name='{}/p2_1x1'.format(name), bottom=bottom, num_output=p2_1x1, kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top2 = addConvBnRelu(model, name='{}/p2_3x3'.format(name), bottom=bottom,  num_output=p2_3x3s2,
-                                kernel_size=3, stride=2, pad=0, filler="xavier")
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_3x3',
+        bottom=bottom,
+        num_output=p2_3x3s2,
+        kernel_size=3,
+        stride=2,
+        pad=0,
+        filler="xavier",
+    )
 
     # p3: pool stride 2
-    model, top3 = addPool(model, name='{}/p3_pool'.format(name), bottom=bottom,
-                          kernel_size=3, stride=2, pad=0, pool_type=pool)
+    model, top3 = addPool(
+        model,
+        name=f'{name}/p3_pool',
+        bottom=bottom,
+        kernel_size=3,
+        stride=2,
+        pad=0,
+        pool_type=pool,
+    )
 
     # concat
     tops = [top1, top2, top3]
-    model, top = addConcat(model,  name='{}/concat'.format(name), bottoms=tops)
+    model, top = addConcat(model, name=f'{name}/concat', bottoms=tops)
     return model, top
 
 #------------------------------------------------------------------------------
 def addInceptionT2(model, name , bottom,  num_proj, num_out, pool):
     # p1:1x1
-    model, top1 = addConvBnRelu(model, name='{}/p1_1x1'.format(name), bottom=bottom, num_output=num_out,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_1x1',
+        bottom=bottom,
+        num_output=num_out,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
     # p2:1x1->1x7->7x1
-    model, top2 = addConvBnRelu(model, name='{}/p2_1x1'.format(name), bottom=bottom, num_output=num_proj,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top2 = addConvBnRelu(model, name='{}/p2_1x7'.format(name), bottom=top2, num_output=num_proj,
-                                kernel_h=1, kernel_w=7, pad_h=0, pad_w=3, stride=1, filler="xavier")
-    model, top2 = addConvBnRelu(model, name='{}/p2_7x1'.format(name), bottom=top2, num_output=num_out,
-                                kernel_h=7, kernel_w=1, pad_h=3, pad_w=0, stride=1, filler="xavier")
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_1x1',
+        bottom=bottom,
+        num_output=num_proj,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_1x7',
+        bottom=top2,
+        num_output=num_proj,
+        kernel_h=1,
+        kernel_w=7,
+        pad_h=0,
+        pad_w=3,
+        stride=1,
+        filler="xavier",
+    )
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_7x1',
+        bottom=top2,
+        num_output=num_out,
+        kernel_h=7,
+        kernel_w=1,
+        pad_h=3,
+        pad_w=0,
+        stride=1,
+        filler="xavier",
+    )
 
     # p3: 1x1->1x7->7x1->1x7->7x1
-    model, top3 = addConvBnRelu(model, name='{}/p3_1x1'.format(name), bottom=bottom, num_output=num_proj,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top3 = addConvBnRelu(model, name='{}/p3_1x7a'.format(name), bottom=top3, num_output=num_proj,
-                                kernel_h=1, kernel_w=7, pad_h=0, pad_w=3, stride=1, filler="xavier")
-    model, top3 = addConvBnRelu(model, name='{}/p3_7x1a'.format(name), bottom=top3, num_output=num_proj,
-                                kernel_h=7, kernel_w=1, pad_h=3, pad_w=0, stride=1, filler="xavier")
-    model, top3 = addConvBnRelu(model, name='{}/p3_1x7b'.format(name), bottom=top3, num_output=num_proj,
-                                kernel_h=1, kernel_w=7, pad_h=0, pad_w=3, stride=1, filler="xavier")
-    model, top3 = addConvBnRelu(model, name='{}/p3_7x1b'.format(name), bottom=top3, num_output=num_out,
-                                kernel_h=7, kernel_w=1, pad_h=3, pad_w=0, stride=1, filler="xavier")
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_1x1',
+        bottom=bottom,
+        num_output=num_proj,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_1x7a',
+        bottom=top3,
+        num_output=num_proj,
+        kernel_h=1,
+        kernel_w=7,
+        pad_h=0,
+        pad_w=3,
+        stride=1,
+        filler="xavier",
+    )
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_7x1a',
+        bottom=top3,
+        num_output=num_proj,
+        kernel_h=7,
+        kernel_w=1,
+        pad_h=3,
+        pad_w=0,
+        stride=1,
+        filler="xavier",
+    )
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_1x7b',
+        bottom=top3,
+        num_output=num_proj,
+        kernel_h=1,
+        kernel_w=7,
+        pad_h=0,
+        pad_w=3,
+        stride=1,
+        filler="xavier",
+    )
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_7x1b',
+        bottom=top3,
+        num_output=num_out,
+        kernel_h=7,
+        kernel_w=1,
+        pad_h=3,
+        pad_w=0,
+        stride=1,
+        filler="xavier",
+    )
 
     # pool->[1x1]
-    model, top4 = addPool(model, name='{}/p4_pool'.format(name), bottom=bottom,
-                                kernel_size=3, stride=1, pad=1, pool_type=pool)
-    model, top4 = addConvBnRelu(model, name='{}/p4_1x1'.format(name), bottom=top4, num_output=num_out,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
+    model, top4 = addPool(
+        model,
+        name=f'{name}/p4_pool',
+        bottom=bottom,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        pool_type=pool,
+    )
+    model, top4 = addConvBnRelu(
+        model,
+        name=f'{name}/p4_1x1',
+        bottom=top4,
+        num_output=num_out,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
     # concat
     tops = [top1, top2, top3, top4]
-    model, top = addConcat(model, name='{}/concat'.format(name), bottoms=tops)
+    model, top = addConcat(model, name=f'{name}/concat', bottoms=tops)
     return model, top
 
 #------------------------------------------------------------------------------
@@ -105,26 +306,85 @@ def addInceptionT2(model, name , bottom,  num_proj, num_out, pool):
 def addReductionR2(model, name , bottom,  num_proj, num_out, pool):
 
     # p1:[1x1]->[3x3/2]
-    model, top1 = addConvBnRelu(model, name='{}/p1_1x1'.format(name), bottom=bottom, num_output=num_proj,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top1 = addConvBnRelu(model,name='{}/p1_3x3'.format(name), bottom=top1,  num_output=num_out,
-                                kernel_size=3, stride=2, pad=0, filler="xavier")
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_1x1',
+        bottom=bottom,
+        num_output=num_proj,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_3x3',
+        bottom=top1,
+        num_output=num_out,
+        kernel_size=3,
+        stride=2,
+        pad=0,
+        filler="xavier",
+    )
 
     # p2:[1x1]->[1x7]->[7x1]->[3x3]s2
-    model, top2 = addConvBnRelu(model, name='{}/p2_1x1'.format(name), bottom=bottom, num_output=num_proj,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top2 = addConvBnRelu(model, name='{}/p2_1x7'.format(name), bottom=top2, num_output=num_proj,
-                                kernel_h=1, kernel_w=7, pad_h=0, pad_w=3, stride=1,filler="xavier")
-    model, top2 = addConvBnRelu(model, name='{}/p2_7x1'.format(name), bottom=top2, num_output=num_proj,
-                                kernel_h=7, kernel_w=1, pad_h=3, pad_w=0, stride=1,filler="xavier")
-    model, top2 = addConvBnRelu(model, name='{}/p2_3x3'.format(name), bottom=top2, num_output=num_proj,
-                                kernel_size=3, stride=2, pad=0, filler="xavier")
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_1x1',
+        bottom=bottom,
+        num_output=num_proj,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_1x7',
+        bottom=top2,
+        num_output=num_proj,
+        kernel_h=1,
+        kernel_w=7,
+        pad_h=0,
+        pad_w=3,
+        stride=1,
+        filler="xavier",
+    )
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_7x1',
+        bottom=top2,
+        num_output=num_proj,
+        kernel_h=7,
+        kernel_w=1,
+        pad_h=3,
+        pad_w=0,
+        stride=1,
+        filler="xavier",
+    )
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_3x3',
+        bottom=top2,
+        num_output=num_proj,
+        kernel_size=3,
+        stride=2,
+        pad=0,
+        filler="xavier",
+    )
     # p3: pool_3x3/2
-    model, top3 = addPool(model, name='{}/p3_pool'.format(name), bottom=bottom,
-                                kernel_size=3, stride=2, pad=0, pool_type=pool)
+    model, top3 = addPool(
+        model,
+        name=f'{name}/p3_pool',
+        bottom=bottom,
+        kernel_size=3,
+        stride=2,
+        pad=0,
+        pool_type=pool,
+    )
     # concat
     tops = [top1, top2, top3]
-    model, top = addConcat(model,  name='{}/concat'.format(name), bottoms=tops)
+    model, top = addConcat(model, name=f'{name}/concat', bottoms=tops)
     return model, top
 
 #------------------------------------------------------------------------------
@@ -134,57 +394,164 @@ def addReductionR2(model, name , bottom,  num_proj, num_out, pool):
 # 5A: 320,     384, 384, 384       448 384 384 384            192, 'AVE'
 def addInceptionT3(model, name, bottom, p1_num_out, p2_num_out, p3_proj, p3_num_out, p4_num_out, pool):
     # p1:1x1
-    model, top1 = addConvBnRelu(model, name='{}/p1_1x1'.format(name), bottom=bottom, num_output=p1_num_out,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
+    model, top1 = addConvBnRelu(
+        model,
+        name=f'{name}/p1_1x1',
+        bottom=bottom,
+        num_output=p1_num_out,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
 
     # p2:[1x1]->([1x3]+[3x1])
-    model, top2 = addConvBnRelu(model, name='{}/p2_1x1'.format(name), bottom=bottom, num_output=p2_num_out,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top2a = addConvBnRelu(model, name='{}/p2_1x3'.format(name), bottom=top2, num_output=p2_num_out,
-                                kernel_h=1, kernel_w=3, pad_h=0, pad_w=1, stride=1, filler="xavier")
-    model, top2b = addConvBnRelu(model, name='{}/p2_3x1'.format(name), bottom=top2, num_output=p2_num_out,
-                                kernel_h=3, kernel_w=1, pad_h=1, pad_w=0, stride=1, filler="xavier")
+    model, top2 = addConvBnRelu(
+        model,
+        name=f'{name}/p2_1x1',
+        bottom=bottom,
+        num_output=p2_num_out,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top2a = addConvBnRelu(
+        model,
+        name=f'{name}/p2_1x3',
+        bottom=top2,
+        num_output=p2_num_out,
+        kernel_h=1,
+        kernel_w=3,
+        pad_h=0,
+        pad_w=1,
+        stride=1,
+        filler="xavier",
+    )
+    model, top2b = addConvBnRelu(
+        model,
+        name=f'{name}/p2_3x1',
+        bottom=top2,
+        num_output=p2_num_out,
+        kernel_h=3,
+        kernel_w=1,
+        pad_h=1,
+        pad_w=0,
+        stride=1,
+        filler="xavier",
+    )
     p2_tops = [top2a, top2b]
-    model,top2 = addConcat(model, name='{}/p2_concat'.format(name),bottoms=p2_tops)
+    model,top2 = addConcat(model, name=f'{name}/p2_concat', bottoms=p2_tops)
 
     # p3:  1x1->3x3->([3x1] + [1x3])
-    model, top3 = addConvBnRelu(model, name='{}/p3_1x1'.format(name), bottom=bottom, num_output=p3_proj,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
-    model, top3 = addConvBnRelu(model, name='{}/p3_3x3'.format(name), bottom=top3, num_output=p3_num_out,
-                                kernel_size=3, stride=1, pad=1, filler="xavier")
-    model, top3a = addConvBnRelu(model, name='{}/p3_1x3'.format(name), bottom=top3, num_output=p3_num_out,
-                                kernel_h=1, kernel_w=3, pad_h=0, pad_w=1, stride=1, filler="xavier")
-    model, top3b = addConvBnRelu(model, name='{}/p3_3x1'.format(name), bottom=top3, num_output=p3_num_out,
-                                kernel_h=3, kernel_w=1, pad_h=1, pad_w=0, stride=1, filler="xavier")
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_1x1',
+        bottom=bottom,
+        num_output=p3_proj,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
+    model, top3 = addConvBnRelu(
+        model,
+        name=f'{name}/p3_3x3',
+        bottom=top3,
+        num_output=p3_num_out,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        filler="xavier",
+    )
+    model, top3a = addConvBnRelu(
+        model,
+        name=f'{name}/p3_1x3',
+        bottom=top3,
+        num_output=p3_num_out,
+        kernel_h=1,
+        kernel_w=3,
+        pad_h=0,
+        pad_w=1,
+        stride=1,
+        filler="xavier",
+    )
+    model, top3b = addConvBnRelu(
+        model,
+        name=f'{name}/p3_3x1',
+        bottom=top3,
+        num_output=p3_num_out,
+        kernel_h=3,
+        kernel_w=1,
+        pad_h=1,
+        pad_w=0,
+        stride=1,
+        filler="xavier",
+    )
     p3_tops = [top3a, top3b]
-    model,top3 = addConcat(model, name='{}/p3_concat'.format(name),bottoms=p3_tops)
+    model,top3 = addConcat(model, name=f'{name}/p3_concat', bottoms=p3_tops)
 
     # pool->[1x1]
-    model, top4 = addPool(model, name='{}/p4_pool'.format(name), bottom=bottom,
-                                kernel_size=3, stride=1, pad=1, pool_type=pool)
-    model, top4 = addConvBnRelu(model, name='{}/p4_1x1'.format(name), bottom=top4, num_output=p4_num_out,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
+    model, top4 = addPool(
+        model,
+        name=f'{name}/p4_pool',
+        bottom=bottom,
+        kernel_size=3,
+        stride=1,
+        pad=1,
+        pool_type=pool,
+    )
+    model, top4 = addConvBnRelu(
+        model,
+        name=f'{name}/p4_1x1',
+        bottom=top4,
+        num_output=p4_num_out,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
     # concat
     tops = [top1, top2, top3, top4]
-    model, top = addConcat(model, name='{}/concat'.format(name), bottoms=tops)
+    model, top = addConcat(model, name=f'{name}/concat', bottoms=tops)
     return model, top
 
 #-----------------------------------------------------------------------------------
 
 def addAuxLoss(model, name, bottom):
 
-    model, top = addPool(model, name="{}/pool".format(name), bottom=bottom,
-                                kernel_size=5, stride=3, pool_type="AVE")
-    model, top = addConvBnRelu(model, name='{}/conv'.format(name), bottom=top, num_output=128,
-                                kernel_size=1, stride=1, pad=0, filler="xavier")
+    model, top = addPool(
+        model,
+        name=f"{name}/pool",
+        bottom=bottom,
+        kernel_size=5,
+        stride=3,
+        pool_type="AVE",
+    )
+    model, top = addConvBnRelu(
+        model,
+        name=f'{name}/conv',
+        bottom=top,
+        num_output=128,
+        kernel_size=1,
+        stride=1,
+        pad=0,
+        filler="xavier",
+    )
     #    model, top = addDropoutl(model, name="dropout", bottom =top, ratio=0.5)
-    model, top = addFC(model, name="{}/fc1".format(name), bottom=top, num_output=1024, filler='xavier')
-    model, top = addActivation(model, name="{}/relu".format(name),bottom=top)
-    model, top = addFC(model, name="{}/fc2".format(name), bottom=top, num_output=1000, filler='xavier')
+    model, top = addFC(
+        model, name=f"{name}/fc1", bottom=top, num_output=1024, filler='xavier'
+    )
+    model, top = addActivation(model, name=f"{name}/relu", bottom=top)
+    model, top = addFC(
+        model, name=f"{name}/fc2", bottom=top, num_output=1000, filler='xavier'
+    )
     fc_top = top
-    model, top = addSoftmaxLoss(model, name="{}/loss".format(name), bottom_1=fc_top, loss_weight=0.3)
-    model, top = addAccuracy(model, name="{}/top-1".format(name),  bottom_1=fc_top, k=1)
-    model, top = addAccuracy(model, name="{}/top-5".format(name), bottom_1=fc_top, k=5)
+    model, top = addSoftmaxLoss(
+        model, name=f"{name}/loss", bottom_1=fc_top, loss_weight=0.3
+    )
+    model, top = addAccuracy(model, name=f"{name}/top-1", bottom_1=fc_top, k=1)
+    model, top = addAccuracy(model, name=f"{name}/top-5", bottom_1=fc_top, k=5)
 
     return model, top
 

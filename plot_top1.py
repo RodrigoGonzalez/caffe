@@ -13,7 +13,9 @@ from common_plot import parse_files, plot_accuracy
 
 TOP_K = 1
 
-parser = argparse.ArgumentParser(description='Plot top {}% from log files.'.format(TOP_K))
+parser = argparse.ArgumentParser(
+    description=f'Plot top {TOP_K}% from log files.'
+)
 parser.add_argument('-v', dest='value_at_hover', action='store_true',
     help="Display plot values at cursor hover")
 parser.add_argument('-s', dest='separate', action='store_true',

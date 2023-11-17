@@ -82,22 +82,22 @@ layer {{
     num_output: {num_output}\n'''.format(name=name, bottom=bottom, top=top, num_output=num_output)
 
     if (kernel_size > 0):
-        layer += '''    kernel_size: {}\n'''.format(kernel_size)
+        layer += f'''    kernel_size: {kernel_size}\n'''
     if (kernel_h > 0):
-        layer += '''    kernel_h: {}\n'''.format(kernel_h)
+        layer += f'''    kernel_h: {kernel_h}\n'''
     if (kernel_w > 0):
-        layer += '''    kernel_w: {}\n'''.format(kernel_w)
+        layer += f'''    kernel_w: {kernel_w}\n'''
     if (pad > 0 ):
-        layer += '''    pad: {}\n'''.format(pad)
+        layer += f'''    pad: {pad}\n'''
     if (pad_h > 0 ):
-        layer += '''    pad_h: {}\n'''.format(pad_h)
+        layer += f'''    pad_h: {pad_h}\n'''
     if (pad_w > 0 ):
-        layer += '''    pad_w: {}\n'''.format(pad_w)
+        layer += f'''    pad_w: {pad_w}\n'''
     if (stride > 1):
-        layer += '''    stride: {}\n'''.format(stride)
+        layer += f'''    stride: {stride}\n'''
 
     if (dilation > 1):
-        layer += '''    dilation: {}\n'''.format(dilation)
+        layer += f'''    dilation: {dilation}\n'''
     if residual:
         layer += '''    residual: true\n'''
     if residual_init:
@@ -122,7 +122,7 @@ layer {{
         layer += '''    bias_term: false\n'''
 
     if (group>1):
-        layer += '''    group: {}\n'''.format(group)
+        layer += f'''    group: {group}\n'''
 
     layer += '''  }\n'''
 
@@ -184,7 +184,9 @@ def addConvRelu(model, name, bottom, num_output,
                          bias_term=True,filler=filler,
                          weight_sharing=weight_sharing, weight_name=weight_name, bias_name=bias_name,
                          residual=residual, residual_init=residual_init)
-    model, top = addActivation(model=model, name="{}/relu".format(name), bottom=top, type="ReLU")
+    model, top = addActivation(
+        model=model, name=f"{name}/relu", bottom=top, type="ReLU"
+    )
     return model, top
 
 #------------------------------------------------------------------------------
@@ -203,7 +205,7 @@ def addConvBn(model, name, bottom, num_output,
                          bias_term=False,filler=filler,
                          weight_sharing=weight_sharing, weight_name=weight_name, bias_name=bias_name,
                          residual=residual, residual_init=residual_init)
-    model, top = addBN(model, name="{}/bn".format(name), bottom=top)
+    model, top = addBN(model, name=f"{name}/bn", bottom=top)
     return model, top
 
 #------------------------------------------------------------------------------
@@ -222,16 +224,18 @@ def addConvBnRelu(model, name, bottom, num_output,
                        bias_term=False,filler=filler,
                        weight_sharing=weight_sharing, weight_name=weight_name, bias_name=bias_name,
                        residual=residual, residual_init=residual_init)
-    model, top = addBN(model, name="{}/bn".format(name), bottom=top)
-    model, top = addActivation(model=model, name="{}/relu".format(name), bottom=top, type="ReLU")
+    model, top = addBN(model, name=f"{name}/bn", bottom=top)
+    model, top = addActivation(
+        model=model, name=f"{name}/relu", bottom=top, type="ReLU"
+    )
     return model, top
 
 #------------------------------------------------------------------------------
 
 def addBnRelu(model, name, bottom):
 
-    model, top = addBN(model, name="{}/bn".format(name), bottom=bottom, top="{}bn".format(name))
-    model, top = addActivation(model, name="{}/relu".format(name), bottom=top, type="ReLU")
+    model, top = addBN(model, name=f"{name}/bn", bottom=bottom, top=f"{name}bn")
+    model, top = addActivation(model, name=f"{name}/relu", bottom=top, type="ReLU")
     return model, top
 
 #------------------------------------------------------------------------------
@@ -250,10 +254,10 @@ layer {{
                                pool_type=pool_type, kernel_size=kernel_size)
 
     if (stride>1):
-        layer += '''    stride: {}\n'''.format(stride)
+        layer += f'''    stride: {stride}\n'''
 
     if (pad>0):
-        layer += '''    pad: {}\n'''.format(pad)
+        layer += f'''    pad: {pad}\n'''
 
     layer+='''  }\n}'''
     model += layer
@@ -271,8 +275,8 @@ layer {{
 
     tops = []
     for i in xrange(1, group + 1):
-        top="name_{}".format(i)
-        layer +=  '''  top: {}\n'''.format(top)
+        top = f"name_{i}"
+        layer += f'''  top: {top}\n'''
         tops.append(top)
 
  #   print tops
@@ -281,8 +285,8 @@ layer {{
     axis: 1 '''
 
     slice_point = slice_offset;
-    for i in xrange(1, group ):
-        layer += '''    slice_point: {}\n'''. format(slice_point)
+    for _ in xrange(1, group ):
+        layer += f'''    slice_point: {slice_point}\n'''
         slice_point += slice_offset
 
     layer += '''  }
@@ -353,7 +357,7 @@ layer {{
   top: "{top}" '''.format(name=name, top=top)
 
     for bottom in bottoms:
-        model += '''  bottom: "{}" \n'''.format(bottom)
+        model += f'''  bottom: "{bottom}" \n'''
 
     model += '''  eltwise_param {{ operation: {} }}\n}}'''.format(operation)
 
@@ -374,7 +378,7 @@ layer {{
     for i in xrange(1, num_tops+1 ):
         top="{name}.{i}".format(name=name, i=i)
         tops.append(top)
-        layer += '''  top: "{}"\n'''.format(top)
+        layer += f'''  top: "{top}"\n'''
 
     layer += '''}'''
     model +=layer
@@ -390,7 +394,7 @@ layer {{
   type: "Concat"\n'''.format(name=name)
 
     for bottom in bottoms:
-        model += '''  bottom: "{}"\n'''.format(bottom)
+        model += f'''  bottom: "{bottom}"\n'''
 
     model += '''  top: "{top}"
 }}'''. format(top=top)
@@ -399,8 +403,8 @@ layer {{
 #------------------------------------------------------------------------------
 
 def addReplicator(model, name, bottom, multiplier):
-    model, tops = addSplit(model, "{}.r".format(name), bottom, multiplier)
-    model, top  = addConcat(model, "{}.c".format(name), tops)
+    model, tops = addSplit(model, f"{name}.r", bottom, multiplier)
+    model, top = addConcat(model, f"{name}.c", tops)
 
     return model, top
 #------------------------------------------------------------------------------
@@ -433,7 +437,7 @@ layer {{
   bottom: "{bottom_2}"
   top: "{top}"\n'''.format(name=name, top=name, bottom_1=bottom_1, bottom_2=bottom_2)
     if (loss_weight!=1.0):
-        layer += '''  loss_weight:{}\n'''.format(loss_weight)
+        layer += f'''  loss_weight:{loss_weight}\n'''
     layer += ''' }\n'''
 
     model += layer

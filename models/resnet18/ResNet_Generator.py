@@ -252,7 +252,7 @@ def digit_to_char(digit):
 
 def str_base(number, base):
     if number < 0:
-        return '-' + str_base(-number, base)
+        return f'-{str_base(-number, base)}'
     (d, m) = divmod(number, base)
     if d > 0:
         return str_base(d, base) + digit_to_char(m)
@@ -267,25 +267,74 @@ def genRes2(train_val, last_top, small, i, fix_dim):
     branch_last_top=last_top
 
     if small:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=64, stride=1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=64, stride=1, pad=1)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=64,
+            stride=1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=64,
+            stride=1,
+            pad=1,
+        )
     else:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=64, stride=1, pad=0)
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=64, stride=1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv3'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=256, stride=1, pad=0)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=64,
+            stride=1,
+            pad=0,
+        )
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=64,
+            stride=1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv3',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=256,
+            stride=1,
+            pad=0,
+        )
 
     if small==False:
-       branch_str, res_last_top = genConvBnLayer(train_val=branch_str, name='{}skipConv'.format(prefix), bottom=res_last_top,
-         kernel_size=1, num_output=64 if small else 256, stride=1, pad=0)
+        branch_str, res_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}skipConv',
+            bottom=res_last_top,
+            kernel_size=1,
+            num_output=64 if small else 256,
+            stride=1,
+            pad=0,
+        )
 
-    branch_str, last_top = genEltwiseLayer(train_val=branch_str, name='{}eltwise'.format(prefix),
-      bottom_1=branch_last_top, bottom_2=res_last_top, operation="SUM")
-    branch_str, last_top = genActivationLayer(train_val=branch_str, name="{}relu".format(prefix), bottom=last_top)
+    branch_str, last_top = genEltwiseLayer(
+        train_val=branch_str,
+        name=f'{prefix}eltwise',
+        bottom_1=branch_last_top,
+        bottom_2=res_last_top,
+        operation="SUM",
+    )
+    branch_str, last_top = genActivationLayer(
+        train_val=branch_str, name=f"{prefix}relu", bottom=last_top
+    )
 
     train_val += branch_str
     return train_val, last_top
@@ -299,25 +348,74 @@ def genRes3(train_val, last_top, small, i, fix_dim):
     branch_last_top=last_top
 
     if small:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=128, stride=2 if i==1 else 1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=128, stride=1, pad=1)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=128,
+            stride=2 if i == 1 else 1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=128,
+            stride=1,
+            pad=1,
+        )
     else:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=128, stride=2 if i==1 else 1, pad=0)
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=128, stride=1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv3'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=512, stride=1, pad=0)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=128,
+            stride=2 if i == 1 else 1,
+            pad=0,
+        )
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=128,
+            stride=1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv3',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=512,
+            stride=1,
+            pad=0,
+        )
 
     if fix_dim:
-        branch_str, res_last_top = genConvBnLayer(train_val=branch_str, name='{}skipConv'.format(prefix), bottom=res_last_top,
-          kernel_size=1, num_output=128 if small else 512, stride=2, pad=0)
+        branch_str, res_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}skipConv',
+            bottom=res_last_top,
+            kernel_size=1,
+            num_output=128 if small else 512,
+            stride=2,
+            pad=0,
+        )
 
-    branch_str, last_top = genEltwiseLayer(train_val=branch_str, name='{}eltwise'.format(prefix),
-      bottom_1=branch_last_top, bottom_2=res_last_top, operation="SUM")
-    branch_str, last_top = genActivationLayer(train_val=branch_str, name="{}relu".format(prefix), bottom=last_top)
+    branch_str, last_top = genEltwiseLayer(
+        train_val=branch_str,
+        name=f'{prefix}eltwise',
+        bottom_1=branch_last_top,
+        bottom_2=res_last_top,
+        operation="SUM",
+    )
+    branch_str, last_top = genActivationLayer(
+        train_val=branch_str, name=f"{prefix}relu", bottom=last_top
+    )
 
     train_val += branch_str
     return train_val, last_top
@@ -331,25 +429,74 @@ def genRes4(train_val, last_top, small, i, fix_dim):
     branch_last_top=last_top
 
     if small:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=256, stride=2 if i==1 else 1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=256, stride=1, pad=1)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=256,
+            stride=2 if i == 1 else 1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=256,
+            stride=1,
+            pad=1,
+        )
     else:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=256, stride=2 if i==1 else 1, pad=0)
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=256, stride=1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv3'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=1024, stride=1, pad=0)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=256,
+            stride=2 if i == 1 else 1,
+            pad=0,
+        )
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=256,
+            stride=1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv3',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=1024,
+            stride=1,
+            pad=0,
+        )
 
     if fix_dim:
-        branch_str, res_last_top = genConvBnLayer(train_val=branch_str, name='{}skipConv'.format(prefix), bottom=res_last_top,
-          kernel_size=1, num_output=256 if small else 1024, stride=2, pad=0)
+        branch_str, res_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}skipConv',
+            bottom=res_last_top,
+            kernel_size=1,
+            num_output=256 if small else 1024,
+            stride=2,
+            pad=0,
+        )
 
-    branch_str, last_top = genEltwiseLayer(train_val=branch_str, name='{}eltwise'.format(prefix),
-      bottom_1=branch_last_top, bottom_2=res_last_top, operation="SUM")
-    branch_str, last_top = genActivationLayer(train_val=branch_str, name="{}relu".format(prefix), bottom=last_top)
+    branch_str, last_top = genEltwiseLayer(
+        train_val=branch_str,
+        name=f'{prefix}eltwise',
+        bottom_1=branch_last_top,
+        bottom_2=res_last_top,
+        operation="SUM",
+    )
+    branch_str, last_top = genActivationLayer(
+        train_val=branch_str, name=f"{prefix}relu", bottom=last_top
+    )
 
     train_val += branch_str
     return train_val, last_top
@@ -363,25 +510,74 @@ def genRes5(train_val, last_top, small, i, fix_dim):
     branch_last_top=last_top
 
     if small:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=512, stride=2 if i==1 else 1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=512, stride=1, pad=1)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=512,
+            stride=2 if i == 1 else 1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=512,
+            stride=1,
+            pad=1,
+        )
     else:
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv1'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=512, stride=2 if i==1 else 1, pad=0)
-        branch_str, branch_last_top = genConvBnReluLayer(train_val=branch_str, name='{}conv2'.format(prefix), bottom=branch_last_top,
-          kernel_size=3, num_output=512, stride=1, pad=1)
-        branch_str, branch_last_top = genConvBnLayer(train_val=branch_str, name='{}conv3'.format(prefix), bottom=branch_last_top,
-          kernel_size=1, num_output=2048, stride=1, pad=0)
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv1',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=512,
+            stride=2 if i == 1 else 1,
+            pad=0,
+        )
+        branch_str, branch_last_top = genConvBnReluLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv2',
+            bottom=branch_last_top,
+            kernel_size=3,
+            num_output=512,
+            stride=1,
+            pad=1,
+        )
+        branch_str, branch_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}conv3',
+            bottom=branch_last_top,
+            kernel_size=1,
+            num_output=2048,
+            stride=1,
+            pad=0,
+        )
 
     if fix_dim:
-        branch_str, res_last_top = genConvBnLayer(train_val=branch_str, name='{}skipConv'.format(prefix), bottom=res_last_top,
-          kernel_size=1, num_output=512 if small else 2048, stride=2, pad=0)
+        branch_str, res_last_top = genConvBnLayer(
+            train_val=branch_str,
+            name=f'{prefix}skipConv',
+            bottom=res_last_top,
+            kernel_size=1,
+            num_output=512 if small else 2048,
+            stride=2,
+            pad=0,
+        )
 
-    branch_str, last_top = genEltwiseLayer(train_val=branch_str, name='{}eltwise'.format(prefix),
-      bottom_1=branch_last_top, bottom_2=res_last_top, operation="SUM")
-    branch_str, last_top = genActivationLayer(train_val=branch_str, name="{}relu".format(prefix), bottom=last_top)
+    branch_str, last_top = genEltwiseLayer(
+        train_val=branch_str,
+        name=f'{prefix}eltwise',
+        bottom_1=branch_last_top,
+        bottom_2=res_last_top,
+        operation="SUM",
+    )
+    branch_str, last_top = genActivationLayer(
+        train_val=branch_str, name=f"{prefix}relu", bottom=last_top
+    )
 
     train_val += branch_str
     return train_val, last_top
@@ -426,7 +622,7 @@ def main():
         network_str = genTrainVal(ResNetConfig[net])
 #       with open("./models/train_val_{}.prototxt".format(net), 'w') as fp:
 #            fp.write(network_str)
-        fp = open("./models/train_val_{}.prototxt".format(net), 'w')
+        fp = open(f"./models/train_val_{net}.prototxt", 'w')
         fp.write(network_str)
 
 

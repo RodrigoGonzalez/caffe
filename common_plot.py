@@ -37,13 +37,10 @@ def parse_files(files, top_k=1, separate=False):
             log = fp.read()
             net_name = os.path.basename(file) if separate else get_net_name(log)
             if net_name not in data.keys():
-                data[net_name] = {}
-                data[net_name]["accuracy"] = {}
+                data[net_name] = {"accuracy": {}}
                 data[net_name]["accuracy"]["accuracy"] = []
                 data[net_name]["accuracy"]["iteration"] = []
-                data[net_name]["loss"] = {}
-                data[net_name]["loss"]["loss"] = []
-                data[net_name]["loss"]["iteration"] = []
+                data[net_name]["loss"] = {"loss": [], "iteration": []}
             iteration, accuracy = get_test_accuracy(log, top_k)
             data[net_name]["accuracy"]["iteration"].extend(iteration)
             data[net_name]["accuracy"]["accuracy"].extend(accuracy)
@@ -111,14 +108,16 @@ class FollowDotCursor(object):
 
     def setup_annotation(self):
         """Draw and hide the annotation box."""
-        annotation = self.ax.annotate(
-            '', xy=(0, 0), ha = 'right',
-            xytext = self.offsets, textcoords = 'offset points', va = 'bottom',
-            bbox = dict(
-                boxstyle='round,pad=0.5', fc='yellow', alpha=0.75),
-            arrowprops = dict(
-                arrowstyle='->', connectionstyle='arc3,rad=0'))
-        return annotation
+        return self.ax.annotate(
+            '',
+            xy=(0, 0),
+            ha='right',
+            xytext=self.offsets,
+            textcoords='offset points',
+            va='bottom',
+            bbox=dict(boxstyle='round,pad=0.5', fc='yellow', alpha=0.75),
+            arrowprops=dict(arrowstyle='->', connectionstyle='arc3,rad=0'),
+        )
 
     def snap(self, x, y):
         """Return the value in self.tree closest to x, y."""
@@ -144,7 +143,7 @@ def plot_accuracy(top_k, data, value_at_hover=False):
             cursor = FollowDotCursor(ax, iteration, accuracy*100)
 
     plt.legend(nets, loc='lower right')
-    plt.title("Top {}".format(top_k))
+    plt.title(f"Top {top_k}")
     plt.xlabel("Iteration")
     plt.ylabel("Accuracy [%]")
     plt.ylim(0,100)

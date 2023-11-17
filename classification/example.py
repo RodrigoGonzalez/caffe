@@ -74,7 +74,9 @@ def get_transformer(deploy_file, mean_file=None):
             blob.MergeFromString(infile.read())
             if blob.HasField('shape'):
                 blob_dims = blob.shape
-                assert len(blob_dims) == 4, 'Shape should have 4 dimensions - shape is "%s"' % blob.shape
+                assert (
+                    len(blob_dims) == 4
+                ), f'Shape should have 4 dimensions - shape is "{blob.shape}"'
             elif blob.HasField('num') and blob.HasField('channels') and \
                     blob.HasField('height') and blob.HasField('width'):
                 blob_dims = (blob.num, blob.channels, blob.height, blob.width)
@@ -190,14 +192,14 @@ def classify(caffemodel, deploy_file, image_files,
     net = get_net(caffemodel, deploy_file, use_gpu)
     transformer = get_transformer(deploy_file, mean_file)
     _, channels, height, width = transformer.inputs['data']
-    if channels == 3:
-        mode = 'RGB'
-    elif channels == 1:
+    if channels == 1:
         mode = 'L'
+    elif channels == 3:
+        mode = 'RGB'
     else:
-        raise ValueError('Invalid number for channels: %s' % channels)
+        raise ValueError(f'Invalid number for channels: {channels}')
     images = [load_image(image_file, height, width, mode) for image_file in image_files]
-    images = 33*images
+    images *= 33
     labels = read_labels(labels_file)
 
     # Classify the image
@@ -211,10 +213,7 @@ def classify(caffemodel, deploy_file, image_files,
         result = []
         for i in index_list:
             # 'i' is a category in labels and also an index into scores
-            if labels is None:
-                label = 'Class #%s' % i
-            else:
-                label = labels[i]
+            label = f'Class #{i}' if labels is None else labels[i]
             result.append((label, round(100.0*scores[image_index, i],4)))
         classifications.append(result)
 

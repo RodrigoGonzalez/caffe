@@ -13,24 +13,50 @@ def addRes_small(model, name , bottom, num_output, group, j, fix_dim, dilation =
 
     name="{name}.{j}.".format(name=name,j=str(j))
     block=""
-    block, top = addConvBnRelu(model=block, name='{}conv1'.format(name), bottom=bottom, num_output=num_output,
-                               kernel_size=3, group=group,
-                               stride=2 if (fix_dim and (j==1)) else 1,
-                               pad=j if dilation else 1,
-                               dilation=j if dilation else 1)
-    block, top = addConvBn(model=block, name='{}conv2'.format(name), bottom=top, num_output=num_output,
-                               kernel_size=3, group=group, stride=1,
-                               pad=j if dilation else 1,
-                               dilation=j if dilation else 1)
+    block, top = addConvBnRelu(
+        model=block,
+        name=f'{name}conv1',
+        bottom=bottom,
+        num_output=num_output,
+        kernel_size=3,
+        group=group,
+        stride=2 if (fix_dim and (j == 1)) else 1,
+        pad=j if dilation else 1,
+        dilation=j if dilation else 1,
+    )
+    block, top = addConvBn(
+        model=block,
+        name=f'{name}conv2',
+        bottom=top,
+        num_output=num_output,
+        kernel_size=3,
+        group=group,
+        stride=1,
+        pad=j if dilation else 1,
+        dilation=j if dilation else 1,
+    )
     if (fix_dim and (j == 1)):
-        block, res_top = addConvBn(model=block, name='{}skipConv'.format(name), bottom=bottom, num_output=num_output,
-                               kernel_size=1, group=1, stride=2, pad=0)
+        block, res_top = addConvBn(
+            model=block,
+            name=f'{name}skipConv',
+            bottom=bottom,
+            num_output=num_output,
+            kernel_size=1,
+            group=1,
+            stride=2,
+            pad=0,
+        )
     else:
         res_top = bottom
 
-    block, top = addEltwise(model=block, name='{}sum'.format(name),
-                            bottom_1=top, bottom_2=res_top, operation="SUM")
-    block, top = addActivation(model=block, name="{}relu".format(name), bottom=top)
+    block, top = addEltwise(
+        model=block,
+        name=f'{name}sum',
+        bottom_1=top,
+        bottom_2=res_top,
+        operation="SUM",
+    )
+    block, top = addActivation(model=block, name=f"{name}relu", bottom=top)
 
     model += block
     return model, top
